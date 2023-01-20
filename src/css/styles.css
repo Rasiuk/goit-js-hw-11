@@ -1,0 +1,24 @@
+.search-form {
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: rgb(89, 116, 198);
+}
+.input {
+  padding: 5px;
+}
+.search-btn {
+}
+.gallery {
+  gap: 30px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.photo-card {
+  width: 400px;
+  height: 400px;
+}
+.info {
+  width: 400px;
+}
