@@ -3,10 +3,9 @@ import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-
+// import getImages from './fetchImages';
 import Notiflix from 'notiflix';
-const BASE_URL = 'https://pixabay.com/api/';
-const KEY__URL = '32915984-753662c00e21893fc193d0b46';
+
 let searchName = '';
 let currentPage = '';
 const refs = {
@@ -15,12 +14,9 @@ const refs = {
   loadMore: document.querySelector('.load-more'),
   input: document.querySelector('input'),
 };
-
-refs.loadMore.style.display = 'none';
-refs.searchBtn.addEventListener('click', onSearch);
-refs.loadMore.addEventListener('click', onLoadMore);
-
-async function getUser() {
+async function getImages() {
+  const BASE_URL = 'https://pixabay.com/api/';
+  const KEY__URL = '32915984-753662c00e21893fc193d0b46';
   try {
     const response = await axios.get(
       `${BASE_URL}?key=${KEY__URL}&q=${searchName}&page=${currentPage}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40`
@@ -33,6 +29,14 @@ async function getUser() {
     );
   }
 }
+function hiddenBtn() {
+  refs.loadMore.style.display = 'none';
+}
+hiddenBtn();
+refs.searchBtn.addEventListener('click', onSearch);
+refs.loadMore.addEventListener('click', onLoadMore);
+let gallery = new SimpleLightbox('.gallery a');
+
 function createMarcup(hits) {
   const marcup = hits
     .map(
@@ -45,7 +49,8 @@ function createMarcup(hits) {
         comments,
         downloads,
       }) => `<div class="gallery__item">
-  <a class="gallery__link" href="${largeImageURL}" title="${tags}"><img class="gallery__image " src="${webformatURL}" alt="${tags}" /></a>
+      
+  <a class="gallery__link" href="${largeImageURL}" title="${tags}"><img class="gallery__image " src="${webformatURL}" alt="${tags}"  loading="lazy"  /></a>
     
   <div class="info">
     <p class="info-item">
@@ -69,19 +74,25 @@ function createMarcup(hits) {
     )
     .join('');
   refs.gallery.insertAdjacentHTML('beforeend', marcup);
+  gallery.refresh();
 }
 function onSearch(evt) {
   evt.preventDefault();
+  hiddenBtn();
   refs.gallery.innerHTML = '';
 
   currentPage = 1;
   searchName = refs.input.value;
-  getUser().then(respone => {
+  getImages().then(respone => {
     if (respone.hits.length === 0) {
       return errorMessage();
       // return console.log(
       //   'Sorry, there are no images matching your search query. Please try again.'
       // );
+    }
+    if (respone.hits.length < 40) {
+      hiddenBtn();
+      endOfimages();
     }
 
     createMarcup(respone.hits);
@@ -91,9 +102,15 @@ function onSearch(evt) {
 }
 function onLoadMore(evt) {
   currentPage += 1;
-  getUser().then(respone => createMarcup(respone.hits));
+  getImages().then(respone => {
+    if (respone.hits.length < 40) {
+      hiddenBtn();
+      endOfimages();
+    }
+    createMarcup(respone.hits);
+  });
 }
-let gallery = new SimpleLightbox('.gallery');
+
 function totalHitsMesage(totalHits) {
   Notify.success(`Hooray! We found ${totalHits} images.`);
 }
@@ -101,4 +118,7 @@ function errorMessage() {
   Notify.failure(
     'Sorry, there are no images matching your search query. Please try again.'
   );
+}
+function endOfimages() {
+  Notify.info(`We're sorry, but you've reached the end of search results.`);
 }
