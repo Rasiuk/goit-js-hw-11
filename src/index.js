@@ -3,7 +3,7 @@ import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-// import getImages from './fetchImages';
+import getImages from './fetchImages';
 import Notiflix from 'notiflix';
 
 let searchName = '';
@@ -14,21 +14,7 @@ const refs = {
   loadMore: document.querySelector('.load-more'),
   input: document.querySelector('input'),
 };
-async function getImages() {
-  const BASE_URL = 'https://pixabay.com/api/';
-  const KEY__URL = '32915984-753662c00e21893fc193d0b46';
-  try {
-    const response = await axios.get(
-      `${BASE_URL}?key=${KEY__URL}&q=${searchName}&page=${currentPage}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40`
-    );
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.error(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-  }
-}
+
 function hiddenBtn() {
   refs.loadMore.style.display = 'none';
 }
@@ -83,12 +69,9 @@ function onSearch(evt) {
 
   currentPage = 1;
   searchName = refs.input.value;
-  getImages().then(respone => {
+  getImages(searchName, currentPage).then(respone => {
     if (respone.hits.length === 0) {
       return errorMessage();
-      // return console.log(
-      //   'Sorry, there are no images matching your search query. Please try again.'
-      // );
     }
     if (respone.hits.length < 40) {
       hiddenBtn();
@@ -102,7 +85,7 @@ function onSearch(evt) {
 }
 function onLoadMore(evt) {
   currentPage += 1;
-  getImages().then(respone => {
+  getImages(searchName, currentPage).then(respone => {
     if (respone.hits.length < 40) {
       hiddenBtn();
       endOfimages();
