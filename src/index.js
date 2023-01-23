@@ -66,7 +66,7 @@ function onSearch(evt) {
   evt.preventDefault();
   hiddenBtn();
   refs.gallery.innerHTML = '';
-
+  refs.loadMore.style.display = 'block';
   currentPage = 1;
   searchName = refs.input.value;
   getImages(searchName, currentPage).then(respone => {
@@ -79,7 +79,6 @@ function onSearch(evt) {
     }
 
     createMarcup(respone.hits);
-    refs.loadMore.style.display = 'block';
     totalHitsMesage(respone.totalHits);
   });
 }
