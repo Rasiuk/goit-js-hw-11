@@ -66,7 +66,7 @@ function onSearch(evt) {
   evt.preventDefault();
   hiddenBtn();
   refs.gallery.innerHTML = '';
-  refs.loadMore.style.display = 'block';
+  // refs.loadMore.style.display = 'block';
   currentPage = 1;
   searchName = refs.input.value;
   getImages(searchName, currentPage).then(respone => {
@@ -74,8 +74,10 @@ function onSearch(evt) {
       return errorMessage();
     }
     if (respone.hits.length < 40) {
-      hiddenBtn();
       endOfimages();
+    }
+    if (respone.hits.length > 1 && respone.hits.length === 40) {
+      refs.loadMore.style.display = 'block';
     }
 
     createMarcup(respone.hits);
