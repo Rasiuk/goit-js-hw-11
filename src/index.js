@@ -5,6 +5,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import getImages from './fetchImages';
 import Notiflix from 'notiflix';
+import OnlyScroll from 'only-scrollbar';
 
 let searchName = '';
 let currentPage = '';
@@ -106,3 +107,7 @@ function errorMessage() {
 function endOfimages() {
   Notify.info(`We're sorry, but you've reached the end of search results.`);
 }
+const scroll = new OnlyScroll('.gallery', {
+  damping: 0.8,
+  eventContainer: window,
+});
